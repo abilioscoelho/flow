@@ -1,15 +1,27 @@
 import { ThemeToggle } from "@/components/theme-toogle";
+import { useColorScheme } from "@/lib/useColorScheme";
 import Icon from "@expo/vector-icons/Feather";
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
+  const { isDarkColorScheme, colors } = useColorScheme();
+  const dark = isDarkColorScheme;
   return (
     <>
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarStyle: {
+            backgroundColor: colors.background,
+            borderTopColor: colors.grey3,
+            borderTopWidth: 1,
+            height: 60 + insets.bottom,
+            paddingTop: 8,
+          },
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: colors.grey,
         }}
       >
         <Tabs.Screen
@@ -52,10 +64,7 @@ export default function TabsLayout() {
           }}
         />
       </Tabs>
-      <ThemeToggle
-        className="absolute bottom-24 right-2"
-        bottomInset={insets.bottom}
-      />
+      <ThemeToggle className="absolute bottom-24 right-2" />
     </>
   );
 }

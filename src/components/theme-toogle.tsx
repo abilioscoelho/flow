@@ -1,4 +1,4 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import Feather from "@expo/vector-icons/Feather";
 import { useEffect, useRef } from "react";
 import { Animated, TouchableOpacity } from "react-native";
 
@@ -6,11 +6,10 @@ import { cn } from "@/lib/cn";
 import { useColorScheme } from "@/lib/useColorScheme";
 
 type ThemeToggleProps = {
-  bottomInset?: number;
   className?: string;
 };
 
-export function ThemeToggle({ bottomInset = 0, className }: ThemeToggleProps) {
+export function ThemeToggle({ className }: ThemeToggleProps) {
   const { colorScheme, toggleColorScheme } = useColorScheme();
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const dark = colorScheme === "dark";
@@ -46,8 +45,8 @@ export function ThemeToggle({ bottomInset = 0, className }: ThemeToggleProps) {
       }}
     >
       <Animated.View style={{ transform: [{ rotate: rotation }] }}>
-        <MaterialCommunityIcons
-          name={dark ? "weather-sunny" : "weather-night"}
+        <Feather
+          name={dark ? "sun" : "moon"}
           size={22}
           color={dark ? "#fbbf24" : "#6b7280"}
         />
