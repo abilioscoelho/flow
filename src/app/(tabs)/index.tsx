@@ -1,6 +1,15 @@
-import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
-import io from "socket.io-client";
+import Lighthouse from "@/components/lighthouse";
+import { useColorScheme } from "@/lib/useColorScheme";
+import { useEffect, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  AppState,
+  AppStateStatus,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import io, { Socket } from "socket.io-client";
 
 type LastFlow = {
   createdAt: string;
@@ -21,7 +30,15 @@ type Origin = {
 const SOCKET_URL = "https://api.abiliocoelho.dev";
 export default function Index() {
   const [origin, setOrigin] = useState<Origin | null>(null);
+  const [loading, setLoading] = useState(true);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const { top, bottom } = useSafeAreaInsets();
+  const { colors } = useColorScheme();
+
+  const socketRef = useRef<Socket | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const serverUpdateTimeRef = useRef<number>(0);
+  const initialTimeRef = useRef<number>(0);
 
   const formatTime = (s: number) => {
     const h = Math.floor(s / 3600);
@@ -33,62 +50,88 @@ export default function Index() {
   };
 
   useEffect(() => {
-    const socket = io(SOCKET_URL);
-    socket.on("origin", (originData: Origin) => {
-      setOrigin(originData);
-    });
+    const connect = () => {
+      socketRef.current = io(SOCKET_URL);
+      socketRef.current.on("origin", (originData: Origin) => {
+        setOrigin(originData);
+        serverUpdateTimeRef.current = originData.serverTime - Date.now();
+        initialTimeRef.current = new Date(originData.updated).getTime();
+        setLoading(false);
+      });
+
+      timerRef.current = setInterval(() => {
+        if (serverUpdateTimeRef.current) {
+          const now = Date.now() + serverUpdateTimeRef.current;
+          const elapsed = Math.max(0, (now - initialTimeRef.current) / 1000);
+          setElapsedTime(Math.max(0, elapsed));
+        }
+      }, 1000);
+    };
+
+    const disconnect = () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (socketRef.current) socketRef.current.disconnect();
+    };
+
+    const subscription = AppState.addEventListener(
+      "change",
+      (nextState: AppStateStatus) => {
+        if (nextState === "active") {
+          disconnect();
+          connect();
+        } else {
+          disconnect();
+        }
+      }
+    );
+
+    connect();
+
     return () => {
-      socket.disconnect();
+      subscription.remove();
+      disconnect();
     };
   }, []);
 
-  // Cronômetro que atualiza a cada segundo
-  useEffect(() => {
-    if (!origin?.updated) {
-      setElapsedTime(0);
-      return;
-    }
-
-    // Calcula o tempo inicial baseado no serverTime e updated
-    const initialTime = new Date(origin.updated).getTime();
-    const serverOffset = origin.serverTime - Date.now();
-
-    const updateTimer = () => {
-      const now = Date.now() + serverOffset; // Ajusta com offset do servidor
-      const elapsed = Math.max(0, (now - initialTime) / 1000);
-      setElapsedTime(elapsed);
-    };
-
-    // Atualiza imediatamente
-    updateTimer();
-
-    // Atualiza a cada segundo
-    const interval = setInterval(updateTimer, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [origin?.updated, origin?.serverTime]);
-
   return (
-    <View className="flex-1 justify-center bg-background">
-      <View className="flex items-center justify-between p-4 bg-card">
-        <Text className="text-primary">
-          {origin?.origin === "Teresina"
-            ? "Teresina"
-            : origin?.origin === "Timon"
-              ? "Timon"
-              : origin?.origin === "Stop"
-                ? "Fechada"
-                : "Trem"}
-        </Text>
-        {origin?.lastFlow && (
-          <Text className="text-primary">{origin.lastFlow.origin}</Text>
-        )}
-        <Text className="text-primary">
-          {origin?.updated ? formatTime(elapsedTime) : "N/A"}
-        </Text>
-      </View>
+    <View
+      className="flex-1 gap-4 bg-background p-4"
+      style={{ paddingTop: top, paddingBottom: bottom }}
+    >
+      {loading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : (
+        <>
+          <View className="flex items-center justify-between p-4 bg-card rounded-lg">
+            <Text className="text-foreground">
+              {origin?.origin === "Teresina"
+                ? "Verde em Teresina"
+                : origin?.origin === "Timon"
+                  ? "Verde em Timon"
+                  : origin?.origin === "Stop"
+                    ? "Ponte fechada"
+                    : "Passagem de trem"}
+            </Text>
+            {origin?.lastFlow && (
+              <Text className="text-foreground text-xs">
+                {origin.lastFlow.origin}
+              </Text>
+            )}
+            <Text className="text-foreground/50 text-xl font-bold">
+              {formatTime(elapsedTime)}
+            </Text>
+          </View>
+          <View className="flex-row gap-2 items-center justify-center">
+            <Lighthouse
+              city="Teresina"
+              isOpen={origin?.origin === "Teresina"}
+            />
+            <Lighthouse city="Timon" isOpen={origin?.origin === "Timon"} />
+          </View>
+        </>
+      )}
     </View>
   );
 }
