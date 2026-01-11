@@ -177,13 +177,16 @@ export default function Index() {
 
   return (
     <ScrollView
-      className="flex-1 gap-4 bg-background p-4 flex-grow"
+      className="flex-1 bg-background p-4"
       style={{ paddingTop: top, paddingBottom: bottom }}
-      contentContainerClassName="flex-grow"
+      contentContainerClassName="gap-4"
       showsVerticalScrollIndicator={false}
     >
       {loading ? (
-        <View className="flex-1 items-center justify-center">
+        <View
+          className="flex-1 items-center justify-center"
+          style={{ minHeight: width * 1.5 }}
+        >
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
@@ -199,41 +202,40 @@ export default function Index() {
               />
               <Lighthouse city="Timon" isOpen={origin?.origin === "Timon"} />
             </View>
-            <View className="flex items-center justify-between p-4 bg-card rounded-lg">
-              <Text className="text-foreground">
-                {origin?.origin === "Teresina"
-                  ? "Verde em Teresina"
-                  : origin?.origin === "Timon"
-                    ? "Verde em Timon"
-                    : origin?.origin === "Stop"
-                      ? "Ponte fechada"
-                      : "Passagem de trem"}
-              </Text>
-
-              <Text className="text-foreground/50 text-xl font-bold">
-                {formatTime(elapsedTime)}
-              </Text>
+            <View className="gap-3 p-4 bg-card rounded-lg">
+              <View className="flex-row items-center justify-between w-full">
+                <Text className="text-foreground flex-1 text-lg font-bold">
+                  {origin?.origin === "Teresina"
+                    ? "Verde em Teresina"
+                    : origin?.origin === "Timon"
+                      ? "Verde em Timon"
+                      : origin?.origin === "Stop"
+                        ? "Ponte fechada"
+                        : "Passagem de trem"}
+                </Text>
+                <Text className="text-primary text-xl font-bold ml-4">
+                  {formatTime(elapsedTime)}
+                </Text>
+              </View>
               {origin?.lastFlow && (
-                <View className="border-t border-foreground/50 py-2 w-full mt-2">
-                  <View>
-                    <Text className="text-foreground text-base font-bold text-center">
-                      Último fluxo aberto
-                    </Text>
-                    <View className="flex-row items-center justify-between">
-                      <View>
-                        <Text className="text-foreground text-sm">Direção</Text>
-                        <Text className="text-foreground/50 text-sm font-bold">
-                          {origin.lastFlow.origin === "Teresina"
-                            ? "Teresina → Timon"
-                            : "Timon → Teresina"}
-                        </Text>
-                      </View>
-                      <View>
-                        <Text className="text-foreground text-sm">Duração</Text>
-                        <Text className="text-foreground/50 text-sm font-bold">
-                          {formatTime(origin.lastFlow.duration)}
-                        </Text>
-                      </View>
+                <View className="border-t border-foreground/50 pt-3 mt-2">
+                  <Text className="text-foreground text-base font-bold text-center mb-3">
+                    Último fluxo aberto
+                  </Text>
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-1">
+                      <Text className="text-foreground text-sm">Direção</Text>
+                      <Text className="text-foreground/50 text-sm font-bold">
+                        {origin.lastFlow.origin === "Teresina"
+                          ? "Teresina → Timon"
+                          : "Timon → Teresina"}
+                      </Text>
+                    </View>
+                    <View className="flex-1 items-end">
+                      <Text className="text-foreground text-sm">Duração</Text>
+                      <Text className="text-foreground/50 text-sm font-bold">
+                        {formatTime(origin.lastFlow.duration)}
+                      </Text>
                     </View>
                   </View>
                 </View>

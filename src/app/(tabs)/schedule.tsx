@@ -43,7 +43,7 @@ export default function Schedule() {
 
       {/* Card 2: Fluxo Alternado */}
       <View className="bg-card rounded-lg p-4 relative">
-        <View className="absolute top-4 left-4 bg-orange-500 rounded-full px-3 py-1">
+        <View className="absolute top-4 left-4 bg-gray-500 rounded-full px-3 py-1">
           <Text className="text-white text-sm font-bold">Fluxo Alternado</Text>
         </View>
         <View className="mt-10 gap-3">
@@ -67,10 +67,18 @@ export default function Schedule() {
             </Text>
           </View>
           <Text className="text-foreground text-sm text-justify">
-            Fluxo alternado entre as duas cidades. Revezamento de
-            aproximadamente 5 minutos para cada sentido.
+            Fluxo alternado entre as duas cidades.
+          </Text>
+          <Text className="text-foreground text-sm text-justify">
+            Revezamento de aproximadamente 5 minutos para cada sentido.
           </Text>
         </View>
+      </View>
+      <View className="bg-card rounded-lg p-4 relative flex-row items-center gap-2">
+        <Ionicons name="information-circle" size={22} color={colors.primary} />
+        <Text className="text-foreground text-sm text-justify flex-1">
+          Os horários são aproximados e podem sofrer alterações.
+        </Text>
       </View>
     </ScrollView>
   );
