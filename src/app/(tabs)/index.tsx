@@ -7,6 +7,9 @@ import {
   AppStateStatus,
   Dimensions,
   Image,
+  Linking,
+  Pressable,
+  ScrollView,
   Text,
   View,
 } from "react-native";
@@ -34,46 +37,43 @@ type Origin = {
   updated: string;
 };
 
-const width = Dimensions.get("window").width;
-
-const ref = useRef<ICarouselInstance>(null);
-const progress = useSharedValue<number>(0);
-
-const onPressPagination = (index: number) => {
-  ref.current?.scrollTo({
-    count: index - progress.value,
-    animated: true,
-  });
+type Media = {
+  url: string;
+  path: string;
 };
 
 const SOCKET_URL = "https://api.abiliocoelho.dev";
 
-const data = [
-  {
-    url: "https://bond.app.br/bond/anuncie.png",
-    descricao: "Anuncie aqui",
-  },
+const MEDIA_URL = "https://api.abiliocoelho.dev/media";
 
-  {
-    url: "https://bond.app.br/bond/anuncie.png",
-    descricao: "Anuncie aqui",
-  },
-  {
-    url: "https://bond.app.br/bond/anuncie.png",
-    descricao: "Anuncie aqui",
-  },
-];
 export default function Index() {
   const [origin, setOrigin] = useState<Origin | null>(null);
   const [loading, setLoading] = useState(true);
   const [elapsedTime, setElapsedTime] = useState(0);
   const { top, bottom } = useSafeAreaInsets();
   const { colors } = useColorScheme();
+  const [media, setMedia] = useState<Media[]>([]);
 
   const socketRef = useRef<Socket | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const serverUpdateTimeRef = useRef<number>(0);
   const initialTimeRef = useRef<number>(0);
+  const carouselAutoPlayRef = useRef<ReturnType<typeof setInterval> | null>(
+    null
+  );
+
+  const width = Dimensions.get("window").width;
+
+  const ref = useRef<ICarouselInstance>(null);
+  const progress = useSharedValue<number>(0);
+  const [autoPlayEnabled, setAutoPlayEnabled] = useState(false);
+
+  const onPressPagination = (index: number) => {
+    ref.current?.scrollTo({
+      count: index - progress.value,
+      animated: true,
+    });
+  };
 
   const formatTime = (s: number) => {
     const h = Math.floor(s / 3600);
@@ -83,6 +83,14 @@ export default function Index() {
       .toString()
       .padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
   };
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(MEDIA_URL)
+      .then((res) => res.json())
+      .then((data) => setMedia(data))
+      .finally(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
     const connect = () => {
@@ -128,10 +136,51 @@ export default function Index() {
     };
   }, []);
 
+  // Garantir que o autoPlay inicie após o carrossel ser montado
+  useEffect(() => {
+    if (!loading) {
+      // Delay para garantir que o carrossel está totalmente renderizado
+      const timer = setTimeout(() => {
+        setAutoPlayEnabled(true);
+        if (ref.current) {
+          ref.current.scrollTo({ count: 0, animated: false });
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setAutoPlayEnabled(false);
+    }
+  }, [loading]);
+
+  // Timer manual como fallback para avançar o carrossel
+  useEffect(() => {
+    if (autoPlayEnabled && !loading && ref.current) {
+      carouselAutoPlayRef.current = setInterval(() => {
+        if (ref.current) {
+          ref.current.next({ animated: true });
+        }
+      }, 10000);
+    } else {
+      if (carouselAutoPlayRef.current) {
+        clearInterval(carouselAutoPlayRef.current);
+        carouselAutoPlayRef.current = null;
+      }
+    }
+
+    return () => {
+      if (carouselAutoPlayRef.current) {
+        clearInterval(carouselAutoPlayRef.current);
+        carouselAutoPlayRef.current = null;
+      }
+    };
+  }, [autoPlayEnabled, loading]);
+
   return (
-    <View
-      className="flex-1 gap-2 bg-background p-4 justify-between"
+    <ScrollView
+      className="flex-1 gap-4 bg-background p-4 flex-grow"
       style={{ paddingTop: top, paddingBottom: bottom }}
+      contentContainerClassName="flex-grow"
+      showsVerticalScrollIndicator={false}
     >
       {loading ? (
         <View className="flex-1 items-center justify-center">
@@ -139,10 +188,17 @@ export default function Index() {
         </View>
       ) : (
         <>
-          <View>
+          <View className="gap-2">
             <Text className="text-foreground text-lg font-bold text-center">
               Ponte João Luís Ferreira
             </Text>
+            <View className="flex-row gap-2 items-center justify-around bg-card rounded-lg p-4">
+              <Lighthouse
+                city="Teresina"
+                isOpen={origin?.origin === "Teresina"}
+              />
+              <Lighthouse city="Timon" isOpen={origin?.origin === "Timon"} />
+            </View>
             <View className="flex items-center justify-between p-4 bg-card rounded-lg">
               <Text className="text-foreground">
                 {origin?.origin === "Teresina"
@@ -183,37 +239,39 @@ export default function Index() {
                 </View>
               )}
             </View>
-            <View className="flex-row gap-2 items-center justify-center">
-              <Lighthouse
-                city="Teresina"
-                isOpen={origin?.origin === "Teresina"}
-              />
-              <Lighthouse city="Timon" isOpen={origin?.origin === "Timon"} />
-            </View>
           </View>
-          <View className="w-full">
+          <View className="w-full rounded-lg overflow-hidden">
             <Carousel
+              key={`carousel-${autoPlayEnabled}`}
               ref={ref}
-              autoPlay={true}
+              autoPlay={autoPlayEnabled}
+              autoPlayInterval={3000}
               loop={true}
-              width={width * 0.95}
-              height={(width * 0.95) / 2}
-              data={data}
+              width={width - 32}
+              height={(width - 32) / 1.77}
+              data={media}
               onProgressChange={progress}
+              enabled={true}
+              autoPlayReverse={false}
+              snapEnabled={true}
+              pagingEnabled={true}
               renderItem={({ item }) => (
-                <View className="border-radius-8 flex-1 overflow-hidden rounded-lg">
+                <Pressable
+                  className="flex-1 overflow-hidden rounded-lg"
+                  onPress={() => Linking.openURL(item.path)}
+                >
                   <Image
                     source={{ uri: item.url }}
-                    className="h-full w-full"
-                    resizeMode="cover"
+                    className="h-full w-full object-contain "
+                    resizeMode="contain"
                   />
-                </View>
+                </Pressable>
               )}
             />
 
             <Pagination.Basic
               progress={progress}
-              data={data}
+              data={media}
               dotStyle={{
                 backgroundColor: colors.foreground,
                 borderRadius: 10,
@@ -228,6 +286,6 @@ export default function Index() {
           </View>
         </>
       )}
-    </View>
+    </ScrollView>
   );
 }
