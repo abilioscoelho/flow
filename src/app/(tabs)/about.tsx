@@ -36,7 +36,7 @@ export default function About() {
         <Text className="text-foreground text-lg font-bold">
           Sistema de Monitoramento
         </Text>
-        <Text className="text-foreground text-sm text-justify">
+        <Text className="text-foreground text-sm">
           Sistema em tempo real para monitoramento do fluxo de trânsito na Ponte
           João Luís Ferreira, conectando as cidades de Teresina (PI) e Timon
           (MA).
@@ -61,7 +61,7 @@ export default function About() {
           <Text className="text-foreground text-lg font-bold">Instituição</Text>
         </View>
         <View className="gap-1">
-          <Text className="text-foreground text-base">
+          <Text className="text-foreground text-base" numberOfLines={2}>
             IFMA - Instituto Federal do Maranhão
           </Text>
           <Text className="text-muted-foreground text-sm">Campus Timon</Text>
@@ -78,9 +78,14 @@ export default function About() {
           {technologies.map((tech, index) => (
             <View
               key={index}
-              className="bg-primary/20 rounded-full px-3 py-1.5"
+              className="bg-primary/20 rounded-full px-2.5 py-1.5"
             >
-              <Text className="text-primary text-sm font-semibold">{tech}</Text>
+              <Text
+                className="text-primary text-xs font-semibold"
+                numberOfLines={1}
+              >
+                {tech}
+              </Text>
             </View>
           ))}
         </View>
@@ -91,16 +96,16 @@ export default function About() {
         <Text className="text-foreground text-lg font-bold text-center">
           Uma parceria
         </Text>
-        <View className="flex-row items-center justify-center gap-4">
-          <View className="flex-1 aspect-square max-w-[120px] bg-card rounded-lg">
+        <View className="flex-row items-center justify-center gap-3 px-4">
+          <View className="flex-1 aspect-square max-w-[140px] min-w-[100px] bg-card rounded-lg p-2">
             <Image
               source={require("@/assets/ifma.png")}
               className="w-full h-full"
               resizeMode="contain"
             />
           </View>
-          <Ionicons name="close" size={24} color={colors.foreground} />
-          <View className="flex-1 aspect-square max-w-[120px] bg-card rounded-lg">
+          <Ionicons name="close" size={20} color={colors.foreground} />
+          <View className="flex-1 aspect-square max-w-[140px] min-w-[100px] bg-card rounded-lg p-2">
             <Image
               source={require("@/assets/timon.png")}
               className="w-full h-full"

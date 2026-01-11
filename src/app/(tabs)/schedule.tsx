@@ -15,6 +15,7 @@ export default function Schedule() {
         paddingBottom: bottom,
       }}
       contentContainerClassName="gap-4"
+      showsVerticalScrollIndicator={false}
     >
       <Text className="text-foreground text-2xl font-bold text-center">
         Horários de Funcionamento
@@ -22,10 +23,10 @@ export default function Schedule() {
 
       {/* Card 1: Fluxo Contínuo */}
       <View className="bg-card rounded-lg p-4 relative">
-        <View className="absolute top-4 left-4 bg-primary rounded-full px-3 py-1">
-          <Text className="text-white text-sm font-bold">Fluxo Contínuo</Text>
+        <View className="absolute top-3 left-3 bg-primary rounded-full px-2.5 py-1 z-10">
+          <Text className="text-white text-xs font-bold">Fluxo Contínuo</Text>
         </View>
-        <View className="mt-10 gap-3">
+        <View className="pt-8 gap-3">
           <View className="flex-row items-center gap-2">
             <Ionicons name="time" size={22} color={colors.primary} />
             <Text className="text-foreground text-base font-semibold">
@@ -35,7 +36,7 @@ export default function Schedule() {
           <Text className="text-foreground text-base font-semibold">
             Timon → Teresina
           </Text>
-          <Text className="text-foreground text-sm text-justify">
+          <Text className="text-foreground text-sm">
             Fluxo contínuo e exclusivo sentido Timon para Teresina.
           </Text>
         </View>
@@ -43,10 +44,10 @@ export default function Schedule() {
 
       {/* Card 2: Fluxo Alternado */}
       <View className="bg-card rounded-lg p-4 relative">
-        <View className="absolute top-4 left-4 bg-gray-500 rounded-full px-3 py-1">
-          <Text className="text-white text-sm font-bold">Fluxo Alternado</Text>
+        <View className="absolute top-3 left-3 bg-gray-500 rounded-full px-2.5 py-1 z-10">
+          <Text className="text-white text-xs font-bold">Fluxo Alternado</Text>
         </View>
-        <View className="mt-10 gap-3">
+        <View className="pt-8 gap-3">
           <View className="flex-row items-center gap-2">
             <Ionicons name="time" size={22} color={colors.primary} />
             <Text className="text-foreground text-base font-semibold">
@@ -66,17 +67,14 @@ export default function Schedule() {
               Timon ← Teresina
             </Text>
           </View>
-          <Text className="text-foreground text-sm text-justify">
-            Fluxo alternado entre as duas cidades.
-          </Text>
-          <Text className="text-foreground text-sm text-justify">
-            Revezamento de aproximadamente 5 minutos para cada sentido.
+          <Text className="text-foreground text-sm">
+            Fluxo alternado entre as duas cidades. Revezamento de aproximadamente 5 minutos para cada sentido.
           </Text>
         </View>
       </View>
-      <View className="bg-card rounded-lg p-4 relative flex-row items-center gap-2">
-        <Ionicons name="information-circle" size={22} color={colors.primary} />
-        <Text className="text-foreground text-sm text-justify flex-1">
+      <View className="bg-card rounded-lg p-4 flex-row items-center gap-2">
+        <Ionicons name="information-circle" size={20} color={colors.primary} />
+        <Text className="text-foreground text-sm flex-1">
           Os horários são aproximados e podem sofrer alterações.
         </Text>
       </View>

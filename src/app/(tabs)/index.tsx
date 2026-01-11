@@ -204,7 +204,7 @@ export default function Index() {
             </View>
             <View className="gap-3 p-4 bg-card rounded-lg">
               <View className="flex-row items-center justify-between w-full">
-                <Text className="text-foreground flex-1 text-lg font-bold">
+                <Text className="text-foreground flex-1 text-base font-bold" numberOfLines={1}>
                   {origin?.origin === "Teresina"
                     ? "Verde em Teresina"
                     : origin?.origin === "Timon"
@@ -213,7 +213,7 @@ export default function Index() {
                         ? "Ponte fechada"
                         : "Passagem de trem"}
                 </Text>
-                <Text className="text-primary text-xl font-bold ml-4">
+                <Text className="text-primary text-lg font-bold ml-3 flex-shrink-0">
                   {formatTime(elapsedTime)}
                 </Text>
               </View>
