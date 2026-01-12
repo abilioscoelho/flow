@@ -116,7 +116,7 @@ export default function About() {
       </View>
 
       {/* Versão */}
-      <Text className="text-foreground text-sm text-center">Versão 1.4.0</Text>
+      <Text className="text-foreground text-sm text-center">Versão 1.5.0</Text>
     </ScrollView>
   );
 }

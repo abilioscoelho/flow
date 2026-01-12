@@ -204,7 +204,10 @@ export default function Index() {
             </View>
             <View className="gap-3 p-4 bg-card rounded-lg">
               <View className="flex-row items-center justify-between w-full">
-                <Text className="text-foreground flex-1 text-base font-bold" numberOfLines={1}>
+                <Text
+                  className="text-foreground flex-1 text-base font-bold"
+                  numberOfLines={1}
+                >
                   {origin?.origin === "Teresina"
                     ? "Verde em Teresina"
                     : origin?.origin === "Timon"
