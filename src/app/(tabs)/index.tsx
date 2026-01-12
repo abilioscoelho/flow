@@ -216,7 +216,7 @@ export default function Index() {
                         ? "Ponte fechada"
                         : "Passagem de trem"}
                 </Text>
-                <Text className="text-primary text-lg font-bold ml-3 flex-shrink-0">
+                <Text className="text-foreground text-lg font-bold ml-3 flex-shrink-0">
                   {formatTime(elapsedTime)}
                 </Text>
               </View>

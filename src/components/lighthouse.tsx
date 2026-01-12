@@ -14,15 +14,9 @@ export default function Lighthouse({ city, isOpen }: LighthouseProps) {
         <View
           className={cn(
             "size-10 rounded-full",
-            isOpen ? "bg-red-900/50" : "bg-red-500 shadow-lg shadow-red-500/50"
-          )}
-        />
-        <View
-          className={cn(
-            "size-10 rounded-full",
             isOpen
               ? "bg-green-500 shadow-lg shadow-green-500/50"
-              : "bg-green-800/50"
+              : "bg-red-500 shadow-lg shadow-red-500/50"
           )}
         />
       </View>

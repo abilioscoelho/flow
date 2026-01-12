@@ -68,7 +68,8 @@ export default function Schedule() {
             </Text>
           </View>
           <Text className="text-foreground text-sm">
-            Fluxo alternado entre as duas cidades. Revezamento de aproximadamente 5 minutos para cada sentido.
+            Fluxo alternado entre as duas cidades. Revezamento de
+            aproximadamente 5 minutos para cada sentido.
           </Text>
         </View>
       </View>
