@@ -68,6 +68,15 @@ export default function Index() {
   const progress = useSharedValue<number>(0);
   const [autoPlayEnabled, setAutoPlayEnabled] = useState(false);
 
+  const shuffleArray = <T extends Media>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   const onPressPagination = (index: number) => {
     ref.current?.scrollTo({
       count: index - progress.value,
@@ -88,7 +97,12 @@ export default function Index() {
     setLoading(true);
     fetch(MEDIA_URL)
       .then((res) => res.json())
-      .then((data) => setMedia(data))
+      .then((data) => {
+        // Embaralhar as mídias antes de definir no estado
+        const shuffledMedia = shuffleArray(data);
+        console.log(JSON.stringify(shuffledMedia, null, 2));
+        setMedia(shuffledMedia);
+      })
       .finally(() => setLoading(false));
   }, []);
 
